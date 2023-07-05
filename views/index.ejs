@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">    
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    <title>Submit Data</title>
+    <style>
+        .ui-button {
+            padding: .4em 1em;
+            display: inline-block;
+            position: relative;
+            line-height: normal;
+            margin-right: .1em;
+            cursor: pointer;
+            vertical-align: middle;
+            text-align: center;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            overflow: visible;
+        }
+        label, input { display:block; } 
+        input.text { margin-bottom:8px; width:95%; padding: .4em; }
+        fieldset { padding:0; border:0; margin-top:25px; }
+        h1 { font-size: 1.2em; margin: .6em 0; }
+        div#users-contain { width: 350px; margin: 20px 0; }
+        div#users-contain table { margin: 1em 0; border-collapse: collapse; width: 100%; }
+        div#users-contain table td, div#users-contain table th { border: 2px solid gray; padding: .6em 10px; text-align: left; }
+        .ui-dialog { padding: .3em; }
+    </style>
+    <script>
+        $(document).ready(() => {
+            $("#myform").dialog({
+                autoOpen:false,
+                height:350,
+                width:400,
+                modal:true,
+                show:{
+                    effect:"blind",
+                    duration:1000
+                },
+                hide:{
+                    effect:"explosion",
+                    duration:1000
+                },
+                buttons:{
+                    "Insert": insert,
+                    "Update": update,
+                    Cancel: function() {
+                    dialog.dialog( "close" );
+                    }
+                },
+                close: function() {
+                    form[ 0 ].reset();
+                }
+            });
+            $("#show").on("click",() => {
+                $("#myform").dialog("open");
+            });
+        });
+        function getdata() {
+            let rollno = document.getElementById('roll').value
+            if (rollno == "" || rollno == null) {
+                let rollno = prompt("This will not work! Please enter the roll number.")
+            }
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "/select", true);
+            xhr.setRequestHeader("Content-type", "application/json");
+            let jsonData = {
+                roll:rollno
+            }
+            xhr.send(JSON.stringify(jsonData));
+            xhr.onreadystatechange = () => {
+                let a = JSON.parse(xhr.responseText);
+                console.log(a);
+                document.getElementById('roll').value = a[0].rollno;
+                document.getElementById('uname').value = a[0].name;
+                document.getElementById('age').value = a[0].age;
+                document.getElementById('dept').value = a[0].dept;
+            }
+        }
+
+        function insert(){
+            let rollno = document.getElementById('roll').value
+            let name = document.getElementById('uname').value
+            let age = document.getElementById('age').value
+            let dept = document.getElementById('dept').value
+            if (rollno == "" || rollno == null) {
+                let rollno = prompt("This will not work! Please enter the roll number.")
+            }
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "/insert", true);
+            xhr.setRequestHeader("Content-type", "application/json");
+            let jsonData = {
+                roll:rollno,
+                name:name,
+                age:age,
+                dept:dept
+            }
+            xhr.send(JSON.stringify(jsonData));
+            xhr.onreadystatechange = () => {
+                let a = JSON.parse(xhr.responseText);
+                console.log(a);
+                alert("Inserted Successfully!");
+            }
+        }
+
+        function update(){
+            let rollno = document.getElementById('roll').value
+            let name = document.getElementById('uname').value
+            let age = document.getElementById('age').value
+            let dept = document.getElementById('dept').value
+            if (rollno == "" || rollno == null) {
+                let rollno = prompt("This will not work! Please enter the roll number.")
+            }
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "/update", true);
+            xhr.setRequestHeader("Content-type", "application/json");
+            let jsonData = {
+                roll:rollno,
+                name:name,
+                age:age,
+                dept:dept
+            }
+            xhr.send(JSON.stringify(jsonData));
+            xhr.onreadystatechange = () => {
+                let a = JSON.parse(xhr.responseText);
+                console.log(a);
+                alert("Updated Successfully!");
+            }
+        }
+        
+    </script>
+</head>
+<body>
+    <form action="/sub" method="post" name="myform" id="myform">
+        <label for="roll">Roll Number</label>
+        <input type="text" autocomplete="off" name="roll" id="roll" value="<%=roll%>"><br>
+        <label for="uname">Name</label>
+        <input type="text" autocomplete="off" name="uname" id="uname" value="<%=name%>"><br>
+        <label for="age">Age</label>
+        <input type="text" autocomplete="off" name="age" id="age" value="<%=age%>"><br>
+        <label for="dept">Department</label>
+        <input type="text" autocomplete="off" name="dept" id="dept" value="<%=dept%>"><br>
+        <!-- <input type="button" onclick="getdata()" value="Fetch Values" id="Fetch"><br>
+        <input type="button" value="Insert Values" name="Insert" id="Insert" onclick="insert()"><br>
+        <input type="button" value="Update Values" name="Update" id="Update" onclick="update()"><br> -->
+    </form>
+    <br>
+    <button name="show" id="show" class="ui-button">Show Dialog</button>
+    <br><br>
+    <div id="users-contain">
+        <table>
+            <th>
+                <td>Roll Number</td>
+                <td>Name</td>
+                <td>Age</td>
+                <td>Department</td>
+            </th>
+            <%
+            if(userData.length!=0){
+            var i=1;
+            userData.forEach(function(data){
+            %>
+            <tr>
+                <td><%=i; %></td>
+                <td><%=data.rollno %></td>
+                <td><%=data.name %></td>
+                <td><%=data.age %></td>
+                <td><%=data.dept %></td>
+            </tr>
+            <%  i++; }) %>
+            <% } else{ %>
+                <tr>
+                    <td colspan="7">No Data Found</td>
+                </tr>
+            <% } %>
+        </table>
+    </div>
+</body>
+</html>

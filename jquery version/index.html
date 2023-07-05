@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="jquery.js"></script>
+    <script>
+        $(document).ready(()=>{
+            $("#fetch").click(()=>{
+                if($("#roll").val() === "810720104001"){
+                    $("#uname").val("Aanto");
+                    $("#age").val("20");
+                    $("#dept").val("CSE");
+                }
+                else{
+                    alert("Please enter a valid roll number");  
+                }
+            });
+        });
+    </script>
+    <title>Submit Data</title>
+</head>
+<body>
+    <form action="/" method="post">
+        <label for="roll">Roll Number</label>
+        <input type="text" name="roll" id="roll">
+        <input type="button" value="Fetch Values" id="fetch"><br>
+        <label for="uname">Name</label>
+        <input type="text" name="uname" id="uname"><br>
+        <label for="age">Age</label>
+        <input type="text" name="age" id="age"><br>
+        <label for="dept">Department</label>
+        <input type="text" name="dept" id="dept"><br>
+        <input type="submit" value="Submit values">
+    </form>
+</body>
+</html>
